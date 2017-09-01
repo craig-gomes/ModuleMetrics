@@ -1,0 +1,2 @@
+module,prs, ticket count, component count, supported, url
+puppetdb, 4,50,6,false, http://github.com/puppetlabs/puppetlabs-puppetdb
