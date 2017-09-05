@@ -32,8 +32,8 @@ end
 # The auth token in this URL is mine.  It is recommended that you use your own auth token.
 # https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/
 def get_module_info(mod)
-    pull_url = "https://api.github.com/repos/puppetlabs/puppetlabs-#{mod.name}/issues?state=open&access_token=d1a562a26f93fafa69f1fd87928e5ad4c3bf8db0"
-    response = HTTParty.get pull_url#, :headers=>{"Authorization"=>"Token token=\"d1a562a26f93fafa69f1fd87928e5ad4c3bf8db0\"", "User-Agent"=>"craig.gomes"}
+    pull_url = "https://api.github.com/repos/puppetlabs/puppetlabs-#{mod.name}/issues?state=open&access_token=AUTHTOKEN"
+    response = HTTParty.get pull_url#, :headers=>{"Authorization"=>"Token token=\"AUTHTOKEN\"", "User-Agent"=>"craig.gomes"}
 
 
     json = JSON.parse(response.body)
