@@ -56,7 +56,7 @@ def query_count(jql)
         client = get_client()
         count = client.Issue.jql(jql).count
     rescue => exception
-        p "Exception caught in query #{jql}"
+        p "Exception caught in query #{jql}: " + exception.response.to_s
     end
     return count
 end

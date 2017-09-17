@@ -3,29 +3,40 @@
 # gem install puppet_forge
 # gem install HTTParty
 # gem install json
-require 'puppet_forge'
-require 'HTTParty'
-require 'json' # do not install > 2.0
-require 'jira-ruby'
+require 'bundler'
+
+Bundler.require
 
 require_relative 'supportedmodulesjira'
 
 def get_supported_modules_info()
 
-    #open file for writing
-    target = open("modules.csv", "w")
-    target.truncate(0)
-    target.puts("module,prs, ticket count, component count, supported, url")
+    # #open file for writing
+    # target = open("modules.csv", "w")
+    # target.truncate(0)
+    # target.puts("module,prs, ticket count, component count, supported, url")
+    p "Starting..."
+    session = GoogleDrive::Session.from_service_account_key("PuppetModulePRs.json")
+
+    spreadsheet = session.spreadsheet_by_title("Puppet Modules PRs")
+
+    worksheet = spreadsheet.add_worksheet(DateTime.now.strftime("%Y/%m/%d %H:%M"), 200)
+
+    #adding header row
+    worksheet.insert_rows(1, [['module','prs', 'ticket count', 'component count', 'supported', 'url']])
     #get supported module list
     supported = PuppetForge::Module.where(owner: 'puppetlabs')
     supported.unpaginated.each do |mod|
         #p "Module #{mod.name} UserName  #{mod.owner.username}"
         #There are some modules that are in Puppetlabs namespace that are not maintained by us (Arista, Cumulus)
         if (mod.homepage_url.include? "puppetlabs")
-            target.puts(get_module_info(mod))
+            worksheet.insert_rows(worksheet.num_rows + 1, [get_module_info(mod)])
+            worksheet.save
         end
+        
     end
-    target.close
+    worksheet.save
+    #target.close
 end
 
 
@@ -41,7 +52,8 @@ def get_module_info(mod)
     component_count = get_component_count_for_module(mod.name)
     p mod.name
     #p json
-    return "#{mod.name}, #{json.length},#{ticket_count},#{component_count},#{mod.supported}, #{mod.homepage_url}"
+    return ["#{mod.name}", "#{json.length}","#{ticket_count}","#{component_count}","#{mod.supported}", "#{mod.homepage_url}"]
+    #return "#{mod.name}, #{json.length},#{ticket_count},#{component_count},#{mod.supported}, #{mod.homepage_url}"
     
 end
 
